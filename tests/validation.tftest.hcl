@@ -138,3 +138,75 @@ run "rejects_empty_domain_name" {
 
   expect_failures = [var.domain_name]
 }
+
+run "rejects_blank_record_name" {
+  command = plan
+
+  variables {
+    records = {
+      blank_name = {
+        name    = "   "
+        type    = "A"
+        records = ["192.0.2.10"]
+      }
+    }
+  }
+
+  expect_failures = [var.records]
+}
+
+run "rejects_blank_entry_in_records_list" {
+  command = plan
+
+  variables {
+    records = {
+      blank_entry = {
+        name    = "blank.example.com"
+        type    = "A"
+        records = ["192.0.2.10", "  "]
+      }
+    }
+  }
+
+  expect_failures = [var.records]
+}
+
+run "rejects_blank_alias_fields" {
+  command = plan
+
+  variables {
+    records = {
+      apex = {
+        name = "example.com"
+        type = "A"
+        alias = {
+          name    = ""
+          zone_id = "Z2FDTNDATAQYW2"
+        }
+      }
+    }
+  }
+
+  expect_failures = [var.records]
+}
+
+run "rejects_duplicate_name_and_type" {
+  command = plan
+
+  variables {
+    records = {
+      www_one = {
+        name    = "www.example.com"
+        type    = "A"
+        records = ["192.0.2.10"]
+      }
+      www_two = {
+        name    = "www.example.com."
+        type    = "A"
+        records = ["192.0.2.20"]
+      }
+    }
+  }
+
+  expect_failures = [var.records]
+}

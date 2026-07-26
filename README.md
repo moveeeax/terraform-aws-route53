@@ -54,8 +54,10 @@ Each entry in `records` accepts:
 | `alias`           | `object`       | `null`  | `{ name, zone_id, evaluate_target_health = false }`.                  |
 
 Invalid combinations (`records` **and** `alias`, neither of them, a `ttl` on an
-alias record, an out-of-range `ttl`, an unknown type, or a `CNAME` at the zone
-apex) are rejected at plan time rather than failing part-way through an apply.
+alias record, an out-of-range `ttl`, an unknown type, a `CNAME` at the zone
+apex, a blank `name`/`records` entry/`alias` field, or two entries sharing the
+same `name` and `type`) are rejected at plan time rather than failing
+part-way through an apply.
 
 ### `allow_overwrite`
 
