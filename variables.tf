@@ -81,6 +81,42 @@ variable "records" {
     ])
     error_message = "`ttl` must be between 0 and 172800 seconds."
   }
+
+  validation {
+    condition     = alltrue([for v in var.records : length(trimspace(v.name)) > 0])
+    error_message = "Each record's `name` must not be empty or blank."
+  }
+
+  validation {
+    condition = alltrue([
+      for v in var.records : v.records == null || alltrue([
+        for r in v.records : length(trimspace(r)) > 0
+      ])
+    ])
+    error_message = "`records` entries must not be empty or blank strings."
+  }
+
+  validation {
+    condition = alltrue([
+      for v in var.records : v.alias == null || (
+        length(trimspace(v.alias.name)) > 0 && length(trimspace(v.alias.zone_id)) > 0
+      )
+    ])
+    error_message = "`alias.name` and `alias.zone_id` must not be empty when `alias` is set."
+  }
+
+  validation {
+    # Route 53 identifies a record set by (name, type) [, set_identifier for
+    # routing policies, which this module does not expose]. Two entries that
+    # resolve to the same name and type would both try to manage the same
+    # RRSet: the second apply either conflicts outright or, with
+    # allow_overwrite, silently clobbers the first and the two resources
+    # fight over the record on every subsequent apply.
+    condition = length(distinct([
+      for v in var.records : "${lower(trimsuffix(trimspace(v.name), "."))}#${v.type}"
+    ])) == length(var.records)
+    error_message = "Each (name, type) combination in `records` must be unique; this module does not support routing-policy record sets (no `set_identifier`)."
+  }
 }
 
 variable "tags" {
