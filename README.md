@@ -9,7 +9,7 @@ name servers for delegation at the registrar.
 
 ```hcl
 module "route53" {
-  source = "github.com/moveeeax/terraform-aws-route53"
+  source = "github.com/moveeeax/terraform-aws-route53?ref=v1.0.0" # pin to a release tag
 
   domain_name = "example.com"
 
