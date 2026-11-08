@@ -8,6 +8,22 @@ resource "aws_route53_zone" "this" {
   comment       = var.comment
   force_destroy = var.force_destroy
 
+  # Any vpc block makes the zone private. Route 53 fixes public versus private
+  # at creation, but the provider plans a change between zero and one or more
+  # blocks as an in-place update, which the API then rejects at apply time.
+  # vpc_associations therefore defaults to [] so existing zones stay public.
+  # These inline blocks are authoritative: an aws_route53_zone_association on
+  # this zone from outside the module shows up as drift and is removed on the
+  # next apply.
+  dynamic "vpc" {
+    for_each = var.vpc_associations
+
+    content {
+      vpc_id     = vpc.value.vpc_id
+      vpc_region = vpc.value.vpc_region
+    }
+  }
+
   tags = var.tags
 }
 

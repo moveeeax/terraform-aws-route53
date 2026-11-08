@@ -13,6 +13,11 @@ output "name" {
   value       = aws_route53_zone.this.name
 }
 
+output "is_private" {
+  description = "Whether the hosted zone is private, i.e. associated with at least one VPC."
+  value       = length(var.vpc_associations) > 0
+}
+
 output "name_servers" {
   description = "Name servers assigned to the hosted zone."
   value       = aws_route53_zone.this.name_servers
