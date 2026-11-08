@@ -6,6 +6,8 @@ All notable changes to this module are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-08
+
 ### Added
 
 - Private hosted zones: `vpc_associations` (list of `{ vpc_id, vpc_region }`)
@@ -29,6 +31,7 @@ All notable changes to this module are documented here. The format follows
 
 Initial release (`v0.1.0` points at the same commit).
 
-[Unreleased]: https://github.com/moveeeax/terraform-aws-route53/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/moveeeax/terraform-aws-route53/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/moveeeax/terraform-aws-route53/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/moveeeax/terraform-aws-route53/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/moveeeax/terraform-aws-route53/releases/tag/v1.0.0
