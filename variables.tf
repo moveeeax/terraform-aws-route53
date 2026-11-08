@@ -20,6 +20,35 @@ variable "force_destroy" {
   default     = false
 }
 
+variable "vpc_associations" {
+  description = <<-EOT
+    VPCs to associate with the hosted zone. Leave empty (the default) for a
+    public zone. One or more entries make it a private zone that resolves only
+    inside those VPCs.
+
+    `vpc_region` defaults to the provider's region. Public versus private is
+    fixed when the zone is created: adding the first entry to an existing
+    public zone, or removing the last entry from a private one, plans as an
+    in-place update that the Route 53 API rejects at apply time.
+  EOT
+
+  type = list(object({
+    vpc_id     = string
+    vpc_region = optional(string)
+  }))
+  default = []
+
+  validation {
+    condition     = alltrue([for v in var.vpc_associations : can(regex("^vpc-[0-9a-f]+$", v.vpc_id))])
+    error_message = "Each `vpc_id` in vpc_associations must be a VPC ID such as vpc-0123456789abcdef0."
+  }
+
+  validation {
+    condition     = length(distinct([for v in var.vpc_associations : v.vpc_id])) == length(var.vpc_associations)
+    error_message = "Each VPC may appear only once in vpc_associations."
+  }
+}
+
 variable "records" {
   description = <<-EOT
     Map of DNS records to create in the zone, keyed by an arbitrary name.
